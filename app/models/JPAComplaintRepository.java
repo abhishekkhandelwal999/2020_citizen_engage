@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import java.lang.*;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
@@ -46,7 +45,7 @@ public class JPAComplaintRepository implements ComplaintRepository {
         return supplyAsync(() -> wrap(em -> alllist(em)), executionContext);
     }
 
-    public CompletionStage<String> viewAndClose(int Cid,String ClosedImage,String ClosedDescription,String Status,String ClosedAt){
+    public CompletionStage<String> viewAndClose(int Cid,String ClosedImage,String ClosedDescription,String Status,String ClosedAt) {
         return supplyAsync(() -> wrap(em -> viewAndClose(em,Cid,ClosedImage,ClosedDescription,Status,ClosedAt)), executionContext);
     }
 
@@ -58,6 +57,10 @@ public class JPAComplaintRepository implements ComplaintRepository {
         return supplyAsync(() -> wrap(em -> conditionUserList(em,id,Status)), executionContext);
     }
 
+    public CompletionStage<Stream<Complaint>> conditionStatusList(String Category,String Status) {
+        return supplyAsync(() -> wrap(em -> conditionStatusList(em,Category,Status)), executionContext);
+    }
+
     public CompletionStage<Stream<Complaint>> conditionlist(String Status) {
         return supplyAsync(() -> wrap(em -> conditionlist(em,Status)), executionContext);
     }
@@ -65,15 +68,12 @@ public class JPAComplaintRepository implements ComplaintRepository {
     public CompletionStage<Stream<Complaint>> recentlyclosed(String login) {
         return supplyAsync(() -> wrap(em -> recentlyclosed(em,login)), executionContext);
     }
+    public CompletionStage<String> forgotPassword(String Email,String Password) {
+        return supplyAsync(() -> wrap(em -> forgotPassword(em,Email,Password)), executionContext);
+    }
 
     public CompletionStage<Stream<Complaint>> recentlycreated(String logout) {
         return supplyAsync(() -> wrap(em -> recentlycreated(em,logout)), executionContext);
-    }
-    public CompletionStage<Stream<Object>> userleaderboard() {
-        return supplyAsync(() -> wrap(em -> userleaderboard(em)), executionContext);
-    }
-    public CompletionStage<Stream<Object>> topRankedComplaint() {
-        return supplyAsync(() -> wrap(em -> topRankedComplaint(em)), executionContext);
     }
     public CompletionStage<Stream<Complaint>> adminIconMap() {
         return supplyAsync(() -> wrap(em -> adminIconMap(em)), executionContext);
@@ -81,17 +81,35 @@ public class JPAComplaintRepository implements ComplaintRepository {
     public CompletionStage<Stream<Complaint>> userIconMap(int Id) {
         return supplyAsync(() -> wrap(em -> userIconMap(em,Id)), executionContext);
     }
-    public CompletionStage<String> forgotPassword(String Email,String Password) {
-        return supplyAsync(() -> wrap(em -> forgotPassword(em,Email,Password)), executionContext);
+    public CompletionStage<Stream<Complaint>> deptIconMap(String Category) {
+        return supplyAsync(() -> wrap(em -> deptIconMap(em,Category)), executionContext);
+    }
+
+    //ward
+    public CompletionStage<Stream<Complaint>> categoryDeptList(String Category) {
+        return supplyAsync(() -> wrap(em -> categoryDeptList(em,Category)), executionContext);
+    }
+
+    public CompletionStage<Stream<Object[]>> userleaderboard() {
+        return supplyAsync(() -> wrap(em -> userleaderboard(em)), executionContext);
     }
     public CompletionStage<Stream<Object>> activeRegions() {
         return supplyAsync(() -> wrap(em -> activeRegions(em)), executionContext);
+    }
+    public CompletionStage<Stream<Object>> topRankedComplaint() {
+        return supplyAsync(() -> wrap(em -> topRankedComplaint(em)), executionContext);
     }
     public CompletionStage<Stream<Complaint>> locationComplaints(String location) {
         return supplyAsync(() -> wrap(em -> locationComplaints(em,location)), executionContext);
     }
     public CompletionStage<Stream<Complaint>> topRankedList(String location,String category) {
         return supplyAsync(() -> wrap(em -> topRankedList(em,location,category)), executionContext);
+    }
+    public CompletionStage<Stream<Object>> deptActiveRegions(String Category) {
+        return supplyAsync(() -> wrap(em -> deptActiveRegions(em,Category)), executionContext);
+    }
+    public CompletionStage<Stream<Complaint>> deptLocationComplaints(String location,String category) {
+        return supplyAsync(() -> wrap(em -> deptLocationComplaints(em,location,category)), executionContext);
     }
     private <T> T wrap(Function<EntityManager, T> function) {
         return jpaApi.withTransaction(function);
@@ -136,28 +154,30 @@ public class JPAComplaintRepository implements ComplaintRepository {
         List<Complaint> complaint = em.createQuery("select p from Complaint p where p.Id=:id and p.Status=:Status", Complaint.class).setParameter("id",id).setParameter("Status",Status).getResultList();
         return complaint.stream();
     }
-    private Stream<Object> userleaderboard(EntityManager em) {
+
+    private Stream<Complaint> conditionStatusList(EntityManager em,String Category,String Status) {
+        List<Complaint> complaint = em.createQuery("select p from Complaint p where p.Category=:Category and p.Status=:Status", Complaint.class).setParameter("Category",Category).setParameter("Status",Status).getResultList();
+        return complaint.stream();
+    }
+    //ward
+    private Stream<Complaint> categoryDeptList(EntityManager em,String Category) {
+        List<Complaint> complaint = em.createQuery("select p from Complaint p where p.Category=:Category", Complaint.class).setParameter("Category",Category).getResultList();
+        return complaint.stream();
+    }
+
+    private Stream<Object[]> userleaderboard(EntityManager em) {
         System.out.println("Hello");
 //        List<Complaint> complaint = em.createQuery("select Email,count(Email) as Count from Complaint group by Email", Complaint.class).getResultList();
        //em.createQuery("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
        //em.createQuery(\"SET sql_mode=''");
-        List<Object> complaint = em.createQuery("select Email,Name,count(Email) as Count from Complaint group by Email order by count(Email) desc").getResultList();
+        List<Object[]> complaint = em.createQuery("select Email,Name,count(Email) as Count from Complaint group by Email order by count(Email) desc").getResultList();
         System.out.println("Hello");
         System.out.println(complaint.stream());
         return complaint.stream();
     }
-
-    private Stream<Object> topRankedComplaint(EntityManager em) {
-        List<Object> complaint = em.createQuery("select Location,Category,count(Location) as Count from Complaint group by Location,Category having count(Category)>1 order by count(Category) desc").getResultList();
-        System.out.println("Hello");
-        System.out.println(complaint.stream());
-        return complaint.stream();
-    }
-
     private String viewAndClose(EntityManager em,int Cid,String ClosedImage,String ClosedDescription,String Status,String ClosedAt)
     {
-        int count = em.createQuery("Update Complaint set ClosedImage=:ClosedImage,ClosedDescription=:ClosedDescription,Status=:Status,ClosedAt=:ClosedAt where Cid=:Cid and Status=:existingStatus").setParameter("Cid",Cid).setParameter("existingStatus","Pending").setParameter("ClosedDescription",ClosedDescription).setParameter("ClosedImage",ClosedImage).setParameter("Status",Status).setParameter("ClosedAt",ClosedAt).executeUpdate();
-        System.out.println("Count:"+count);
+        int count = em.createQuery("Update Complaint set ClosedImage=:ClosedImage,ClosedDescription=:ClosedDescription,Status=:Status,ClosedAt=:ClosedAt where Cid=:Cid").setParameter("Cid",Cid).setParameter("ClosedDescription",ClosedDescription).setParameter("ClosedImage",ClosedImage).setParameter("Status",Status).setParameter("ClosedAt",ClosedAt).executeUpdate();
         if(count==0){
             return null;
         }
@@ -166,7 +186,7 @@ public class JPAComplaintRepository implements ComplaintRepository {
     }
 
     private Stream<Complaint> recentlycreated(EntityManager em,String logout) {
-        List<Complaint> complaint = em.createQuery("select p from Complaint p where p.CreatedAt>=:logout and p.Status = : status", Complaint.class).setParameter("logout",logout).setParameter("status","Pending").getResultList();
+        List<Complaint> complaint = em.createQuery("select p from Complaint p where p.CreatedAt>=:logout", Complaint.class).setParameter("logout",logout).getResultList();
         return complaint.stream();
     }
 
@@ -174,20 +194,9 @@ public class JPAComplaintRepository implements ComplaintRepository {
         List<Complaint> complaint = em.createQuery("select p from Complaint p where p.ClosedAt>=:login", Complaint.class).setParameter("login",login).getResultList();
         return complaint.stream();
     }
-
     private Stream<Complaint> adminIconMap(EntityManager em) {
         //System.out.println("Hello");
-        List<Complaint> complaint = em.createQuery("select c.Cid,c.Category,l.Latitude,l.Longitude from Complaint c , LatLong l where c.Location = l.Location and Status = :Status").setParameter("Status","Pending").getResultList();
-        //System.out.println("Hello");
-
-        System.out.println(complaint.stream());
-        return complaint.stream();
-
-    }
-
-    private Stream<Complaint> userIconMap(EntityManager em,int Id) {
-        //System.out.println("Hello");
-        List<Complaint> complaint = em.createQuery("select c.Cid,c.Category,l.Latitude,l.Longitude from Complaint c , LatLong l where c.Location = l.Location and Status = :Status and c.Id =: Id").setParameter("Status","Pending").setParameter("Id",Id).getResultList();
+        List<Complaint> complaint = em.createQuery("select c.Cid,c.Category,l.Latitude,l.Longitude,c.CreatedDescription from Complaint c , LatLong l where c.Location = l.Location and Status = :Status").setParameter("Status","Pending").getResultList();
         //System.out.println("Hello");
 
         System.out.println(complaint.stream());
@@ -204,13 +213,36 @@ public class JPAComplaintRepository implements ComplaintRepository {
             return "OK";}
     }
 
+    private Stream<Complaint> userIconMap(EntityManager em,int Id) {
+        //System.out.println("Hello");
+        List<Complaint> complaint = em.createQuery("select c.Cid,c.Category,l.Latitude,l.Longitude,c.CreatedDescription from Complaint c , LatLong l where c.Location = l.Location and Status = :Status and c.Id =: Id").setParameter("Status","Pending").setParameter("Id",Id).getResultList();
+        //System.out.println("Hello");
+
+        System.out.println(complaint.stream());
+        return complaint.stream();
+
+    }
+    private Stream<Complaint> deptIconMap(EntityManager em,String Category) {
+        //System.out.println("Hello");
+        List<Complaint> complaint = em.createQuery("select c.Cid,c.Category,l.Latitude,l.Longitude,c.CreatedDescription from Complaint c , LatLong l where c.Location = l.Location and Status = :Status and c.Category =: Category").setParameter("Status","Pending").setParameter("Category",Category).getResultList();
+        //System.out.println("Hello");
+
+        System.out.println(complaint.stream());
+        return complaint.stream();
+
+    }
     private Stream<Object> activeRegions(EntityManager em) {
         List<Object> complaint = em.createQuery("select Location,count(Location) as Count from Complaint group by Location having count(Location)>1 order by count(Location) desc").getResultList();
         System.out.println("Hello");
         System.out.println(complaint.stream());
         return complaint.stream();
     }
-
+    private Stream<Object> topRankedComplaint(EntityManager em) {
+        List<Object> complaint = em.createQuery("select Location,Category,count(Location) as Count from Complaint group by Location,Category having count(Category)>1 order by count(Category) desc").getResultList();
+        System.out.println("Hello");
+        System.out.println(complaint.stream());
+        return complaint.stream();
+    }
     private Stream<Complaint> locationComplaints(EntityManager em,String location) {
         List<Complaint> complaint = em.createQuery("select p from Complaint p where Location=:location", Complaint.class).setParameter("location",location).getResultList();
         return complaint.stream();
@@ -220,4 +252,16 @@ public class JPAComplaintRepository implements ComplaintRepository {
         List<Complaint> complaint = em.createQuery("select p from Complaint p where Location=:location and Category =: category", Complaint.class).setParameter("location",location).setParameter("category",category).getResultList();
         return complaint.stream();
     }
+    private Stream<Object> deptActiveRegions(EntityManager em,String Category) {
+        List<Object> complaint = em.createQuery("select Location,count(Location) as Count from Complaint where Category =: Category group by Location having count(Location)>1 order by count(Location) desc").setParameter("Category",Category).getResultList();
+        System.out.println("Hello");
+        System.out.println(complaint.stream());
+        return complaint.stream();
+
+    }
+    private Stream<Complaint> deptLocationComplaints(EntityManager em,String location,String category) {
+        List<Complaint> complaint = em.createQuery("select p from Complaint p where Location=:location and Category =: category", Complaint.class).setParameter("location",location).setParameter("category",category).getResultList();
+        return complaint.stream();
+    }
+
 }

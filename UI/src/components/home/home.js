@@ -3,7 +3,7 @@ import logo from '../images/thumbs-up.jpg';
 import '../images/bgimage.css';
 import './home.css';
 import Nav from './Nav.js';
-//import { useHistory, withRouter,Link } from "react-router-dom";
+import { useHistory, withRouter,Link } from "react-router-dom";
 
 export default class Home extends Component {
     render() {

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Map, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { Icon } from "leaflet";
 //import * as parkData from "./data/skateboard-parks.json";
 import "./marker.css";
@@ -165,7 +165,7 @@ render(){
   var mapIcon;
   
   return (
-    <Map center={[17.437462, 78.448248]} zoom={13}>
+    <MapContainer center={[17.437462, 78.448248]} zoom={13}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -200,7 +200,7 @@ render(){
           </div>
         </Popup>
       )} */}
-    </Map>
+    </MapContainer>
   );
 
 }

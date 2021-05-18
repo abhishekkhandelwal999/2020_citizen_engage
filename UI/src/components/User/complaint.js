@@ -38,6 +38,7 @@ export default class complaint extends Component {
       }
      CurDateTime() {
         var tempDate = new Date();
+        console.log(tempDate);
        var date = tempDate.getFullYear() + '-' + (tempDate.getMonth()+1) + '-' + tempDate.getDate() +' '+ tempDate.getHours()+':'+ tempDate.getMinutes()+':'+ tempDate.getSeconds();
         const currDate = "Current Date= "+date;
         console.log(currDate);

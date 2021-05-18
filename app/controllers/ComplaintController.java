@@ -113,9 +113,10 @@ public class ComplaintController extends Controller{
         String Timestamp = j.get("ClosedAt").asText();
         return complaintRepository.viewAndClose(Cid,Image,Description,Status,Timestamp).thenApplyAsync(c->{
             return ok("Closed");
-         }).exceptionally(e->{
+
+        }).exceptionally(e->{
             System.out.println(Image);
-            return badRequest("Complaint cannot be closed");});
+            return badRequest("Not a valid complaint");});
 
     }
 
@@ -135,6 +136,41 @@ public class ComplaintController extends Controller{
         }, ec.current());
     }
 
+    public CompletionStage<Result> getStatusPendingComplaints() {
+        JsonNode j = request().body().asJson();
+        //int id = Integer.parseInt(j.get("name").asText());
+        String Category = j.get("name").asText();
+        String Status = "Pending";
+        return complaintRepository.conditionStatusList(Category,Status).thenApplyAsync(complaintStream -> {
+            return ok(toJson(complaintStream.collect(Collectors.toList())));
+        }, ec.current());
+    }
+    //ward
+    public CompletionStage<Result> getDeptComplaints() {
+        JsonNode j = request().body().asJson();
+        String Category = j.get("Category").asText();
+        return complaintRepository.categoryDeptList(Category).thenApplyAsync(complaintStream -> {
+            return ok(toJson(complaintStream.collect(Collectors.toList())));
+        }, ec.current());
+    }
+
+//    public CompletionStage<Result> getWardPendingComplaints() {
+//        JsonNode j = request().body().asJson();
+//        String Category = j.get("Category").asText();
+//        String Status = "Pending";
+//        return complaintRepository.conditionStatusList(Category,Status).thenApplyAsync(complaintStream -> {
+//            return ok(toJson(complaintStream.collect(Collectors.toList())));
+//        }, ec.current());
+//    }
+//
+//    public CompletionStage<Result> getWardClosedComplaints() {
+//        JsonNode j = request().body().asJson();
+//        String Category = j.get("Category").asText();
+//        String Status = "Closed";
+//        return complaintRepository.conditionStatusList(Category,Status).thenApplyAsync(complaintStream -> {
+//            return ok(toJson(complaintStream.collect(Collectors.toList())));
+//        }, ec.current());
+//    }
     public CompletionStage<Result> getAdminIconMap() {
         return complaintRepository.adminIconMap().thenApplyAsync(complaintStream -> {
             return ok(toJson(complaintStream.collect(Collectors.toList())));
@@ -145,6 +181,13 @@ public class ComplaintController extends Controller{
         JsonNode j = request().body().asJson();
         int Id = Integer.parseInt(j.get("Id").asText());
         return complaintRepository.userIconMap(Id).thenApplyAsync(complaintStream -> {
+            return ok(toJson(complaintStream.collect(Collectors.toList())));
+        }, ec.current());
+    }
+    public CompletionStage<Result> getDeptIconMap() {
+        JsonNode j = request().body().asJson();
+        String Category = j.get("Category").asText();
+        return complaintRepository.deptIconMap(Category).thenApplyAsync(complaintStream -> {
             return ok(toJson(complaintStream.collect(Collectors.toList())));
         }, ec.current());
     }
@@ -161,7 +204,6 @@ public class ComplaintController extends Controller{
             return badRequest("Not possible to update");});
 
     }
-
     public CompletionStage<Result> getTopRankedComplaint() {
         return complaintRepository.topRankedComplaint().thenApplyAsync(complaintStream -> {
             return ok(toJson(complaintStream.collect(Collectors.toList())));
@@ -173,6 +215,7 @@ public class ComplaintController extends Controller{
             return ok(toJson(complaintStream.collect(Collectors.toList())));
         }, ec.current());
     }
+
 
     public CompletionStage<Result> getLocationComplaints() {
         JsonNode j = request().body().asJson();
@@ -190,6 +233,23 @@ public class ComplaintController extends Controller{
             return ok(toJson(complaintStream.collect(Collectors.toList())));
         }, ec.current());
     }
+
+    public CompletionStage<Result> getDeptActiveRegions() {
+        JsonNode j = request().body().asJson();
+        String category = j.get("Category").asText();
+        return complaintRepository.deptActiveRegions(category).thenApplyAsync(complaintStream -> {
+            return ok(toJson(complaintStream.collect(Collectors.toList())));
+        }, ec.current());
+    }
+    public CompletionStage<Result> getDeptLocationComplaints() {
+        JsonNode j = request().body().asJson();
+        String location = j.get("Location").asText();
+        String category = j.get("Category").asText();
+        return complaintRepository.deptLocationComplaints(location,category).thenApplyAsync(complaintStream -> {
+            return ok(toJson(complaintStream.collect(Collectors.toList())));
+        }, ec.current());
+    }
+
 //    public CompletionStage<Result> deleteUser(){
 //        JsonNode requestJson= request().body().asJson();
 //        String Name=requestJson.get("name").asText();

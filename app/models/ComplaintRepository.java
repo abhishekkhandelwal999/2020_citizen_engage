@@ -21,15 +21,20 @@ public interface ComplaintRepository {
     CompletionStage<Stream<Complaint>> conditionlist(String Status);
     CompletionStage<Stream<Complaint>> allUserList(int id);
     CompletionStage<Stream<Complaint>> conditionUserList(int id,String Status);
-    CompletionStage<Stream<Object>> userleaderboard();
+    CompletionStage<Stream<Complaint>> conditionStatusList(String Category,String Status);
+    CompletionStage<Stream<Object[]>> userleaderboard();
+    CompletionStage<Stream<Complaint>> categoryDeptList(String Category);
     CompletionStage<String> viewAndClose(int Cid,String ClosedImage,String ClosedDescription,String Status,String ClosedAt);
     CompletionStage<Stream<Complaint>> recentlycreated(String logout);
     CompletionStage<Stream<Complaint>> recentlyclosed(String login);
     CompletionStage<Stream<Complaint>> adminIconMap();
     CompletionStage<Stream<Complaint>> userIconMap(int Id);
+    CompletionStage<Stream<Complaint>> deptIconMap(String Category);
     CompletionStage<String> forgotPassword(String Email,String Password);
     CompletionStage<Stream<Object>> topRankedComplaint();
     CompletionStage<Stream<Object>> activeRegions();
     CompletionStage<Stream<Complaint>> locationComplaints(String location);
     CompletionStage<Stream<Complaint>> topRankedList(String location,String category);
+    CompletionStage<Stream<Object>> deptActiveRegions(String Category);
+    CompletionStage<Stream<Complaint>> deptLocationComplaints(String location,String Category);
 }

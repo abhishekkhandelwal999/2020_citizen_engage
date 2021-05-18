@@ -4,21 +4,23 @@ import './home.css';
 import Navigation from './Nav.js';
 import { Container, Row, Col } from 'reactstrap';
 import image from '../images/helpdesk.png';
-// import Collapsible from 'react-collapsible';
+import Collapsible from 'react-collapsible';
 import cx from "classnames";
 import Collapse from "@kunukn/react-collapse";
 import './app.scss';
 
 
 export default class About extends Component{
-    // constructor(props) {
-    //     super(props);
-    //   }
+    constructor(props) {
+        super(props);
+      }
       state = {
         isOpen1: false,
         isOpen2: false,
         isOpen3: false,
         isOpen4: false,
+        isOpen5: false,
+        isOpen6: false,
         spy3: {}
       };
     
@@ -38,7 +40,7 @@ export default class About extends Component{
 Using this portal, User can upload image related to the complaint.
 </i> </Col>
 
-                <Col> <img src={ image } alt="Image"/>
+                <Col> <img src={ image } />
                 
                 </Col>
 
@@ -160,6 +162,61 @@ Application forms for Birth Certificate, Death Certificate, Self Assessment, Lic
               <div className="app__content">
                
                <b>Lokesh Kumar is new GHMC commissioner.</b><br/>
+                
+              </div>
+            </React.Fragment>
+          )}
+        />
+        <button
+          className={cx("app__toggle", {
+            "app__toggle--active": this.state.isOpen5
+          })}
+          onClick={() => this.toggle(5)}
+        >
+         What are time limits for each problem?
+        </button>
+
+        <Collapse isOpen={this.state.isOpen5}
+          className={"app__collapse app__collapse--gradient " +(this.state.isOpen5 ? "app__collapse--active" : "")}
+          transition="height 300ms cubic-bezier(0.4, 0, 0.2, 1)"
+          aria-hidden={this.state.isOpen5 ? "false" : "true"}
+          elementType="article"
+          render={collapseState => (
+            <React.Fragment>
+              <div className="app__content">
+               
+               <b>Electricity</b> : 2 days<br/>
+               <b>Road</b> : 4 days<br/>
+               <b>Garbage</b> : 2 days<br/>
+               <b>Water</b> : 1 day<br/>
+                
+              </div>
+            </React.Fragment>
+          )}
+        />
+
+<button
+          className={cx("app__toggle", {
+            "app__toggle--active": this.state.isOpen6
+          })}
+          onClick={() => this.toggle(6)}
+        >
+         Who are concerned officials for each problem?
+        </button>
+
+        <Collapse isOpen={this.state.isOpen6}
+          className={"app__collapse app__collapse--gradient " +(this.state.isOpen6 ? "app__collapse--active" : "")}
+          transition="height 300ms cubic-bezier(0.4, 0, 0.2, 1)"
+          aria-hidden={this.state.isOpen6 ? "false" : "true"}
+          elementType="article"
+          render={collapseState => (
+            <React.Fragment>
+              <div className="app__content">
+               
+               <b>Electricity</b> : Jinnaram Meghana<br/>
+               <b>Road</b> : Challapalle Himaja<br/>
+               <b>Garbage</b> : Manchala Sarika<br/>
+               <b>Water</b> : Siddam Pavani<br/>
                 
               </div>
             </React.Fragment>
